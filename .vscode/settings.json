@@ -1,0 +1,11 @@
+{
+    "mypy.configFile": "mypy.ini",
+    "mypy.runUsingActiveInterpreter": true,
+    "mypy.enabled": true,
+    "[python]": {
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        }
+    }
+}

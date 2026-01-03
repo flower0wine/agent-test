@@ -1,0 +1,40 @@
+{
+  "include": [
+    "src"
+  ],
+
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "src/experimental",
+    "src/typestubs"
+  ],
+
+  "ignore": [
+    "src/oldstuff"
+  ],
+
+  "defineConstant": {
+    "DEBUG": true
+  },
+
+  "reportMissingImports": "error",
+  "reportMissingTypeStubs": false,
+
+  "pythonVersion": "3.6",
+  "pythonPlatform": "Linux",
+
+  "executionEnvironments": [
+    {
+      "root": "src",
+      "reportUnusedCallResult": "none"
+    }
+  ],
+
+  "typeCheckingMode": "strict",
+  "reportUnknownMemberType": "none",
+  "reportUnknownArgumentType": "none",
+  "reportUnknownVariableType": "none",
+  "reportUnknownParameterType": "none",
+  "reportGeneralTypeIssues": "none"
+}
