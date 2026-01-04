@@ -202,7 +202,6 @@ def respond_task(task_id: str, response: str, wait_time: float = 0.1) -> str:
     except Exception as e:
         return f"发送失败: {str(e)}"
 
-
 @tool
 def peek_task(task_id: str, limit: int = 50,
     offset: int = 0, wait_seconds: float = 0.2) -> str:
@@ -248,6 +247,10 @@ def peek_task(task_id: str, limit: int = 50,
     # 获取分页结果
     page_lines = all_lines[start_index:end_index]
 
+    # 统计信息
+    total_lines = len(all_lines)
+    remaining_lines = max(0, total_lines - end_index)
+
     # 如果没有内容
     if not page_lines:
         page_text = "[无更多数据或offset越界]"
@@ -263,8 +266,10 @@ def peek_task(task_id: str, limit: int = 50,
     return (
         f"任务: {task_id} | 状态: {status}\n"
         f"--- 输出 (offset={offset}, limit={limit}) ---\n"
+        f"总行数: {total_lines} | 未读取剩余行数: {remaining_lines}\n"
         f"{page_text}"
     )
+
 
 if __name__ == "__main__":
     print(is_dangerous_command("C:\\Windows\\System32\\cmd.exe"))

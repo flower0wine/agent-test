@@ -233,13 +233,17 @@ def browserless_web_loader(
 @tool
 def read_file(file_path: str, start_line: int = 1, end_line: int | None = None) -> str:
     """
-    读取指定文件的内容，支持分页读取。
+    读取指定文件的内容，支持分页读取。如果传入路径是目录，则返回该目录下的内容（不递归）。
     
     参数说明:
     - file_path (str): 目标文件的绝对或相对路径。
     - start_line (int): 起始行号，从 1 开始计数。默认为 1。
     - end_line (int, 可选): 结束行号。如果不指定，且未传 start_line，默认读取前 200 行；
                             若指定了 start_line 但未传 end_line，则默认读取从 start_line 开始的后 200 行。
+                            
+    行为说明:
+    - 文件：按行分页读取，默认 200 行
+    - 目录：返回当前目录下的文件 / 子目录列表（不递归）
     
     注意: 
     - 工具会自动处理越界：如果行号超出实际范围，将返回实际存在的有效行。
@@ -248,6 +252,22 @@ def read_file(file_path: str, start_line: int = 1, end_line: int | None = None) 
     try:
         if not os.path.exists(file_path):
             return f"错误：文件 {file_path} 不存在。"
+        
+        if os.path.isdir(file_path):
+            entries = sorted(os.listdir(file_path))
+            if not entries:
+                return f"目录为空：{file_path}"
+
+            output = [f"--- 目录内容: {file_path} (不递归) ---"]
+            for name in entries:
+                full_path = os.path.join(file_path, name)
+                if os.path.isdir(full_path):
+                    output.append(f"[DIR ] {name}")
+                else:
+                    output.append(f"[FILE] {name}")
+
+            output.append(f"--- 共 {len(entries)} 项 ---")
+            return "\n".join(output)
 
         with open(file_path, encoding='utf-8') as f:
             all_lines = f.readlines()
