@@ -192,8 +192,10 @@ def respond_task(task_id: str, response: str, wait_time: float = 0.1) -> str:
     try:
         # 针对不同系统的换行符处理（通常 \n 在管道中是通用的）
         input_data = response if response.endswith('\n') else response + '\n'
-        proc.stdin.write(input_data)
-        proc.stdin.flush()
+        
+        if proc.stdin:
+            proc.stdin.write(input_data)
+            proc.stdin.flush()
         
         if wait_time > 0:
             time.sleep(wait_time)
@@ -223,7 +225,7 @@ def peek_task(task_id: str, limit: int = 50,
       设为 0 可关闭等待。
     """
     proc, q = manager.get_session(task_id)
-    if not proc:
+    if not proc or not q:
         return f"未找到任务 {task_id}。"
 
     # 等待一段时间让输出队列累积
@@ -234,7 +236,6 @@ def peek_task(task_id: str, limit: int = 50,
     # 先取出所有当前队列剩余内容
     all_lines = []
     try:
-        import queue
         while not q.empty():
             all_lines.append(q.get_nowait())
     except queue.Empty:

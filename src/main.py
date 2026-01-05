@@ -14,7 +14,8 @@ from langchain_core.documents import Document
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 
-from src.commands import peek_task, respond_task, start_task
+# from src.commands import peek_task, respond_task, start_task
+from src.plan import get_plans, init_planning, update_plan
 
 load_dotenv()
 
@@ -433,14 +434,22 @@ def edit_file_by_line(file_path: str, start_line: int, end_line: int, new_text: 
 #     system_prompt="你是个专注的高级软件工程师，架构师，擅长分析用户的简单需求，将其实现，专注于用户需求本身，不要随意生成用户可能不需要的内容，这样的内容你应该询问用户。不用编写用户手册或使用文档",
 # )
 
+# agent = create_agent(
+#     model=model,
+#     tools=[read_file, write_file, edit_file_by_line, start_task, respond_task, peek_task, google_search, browserless_web_loader],
+#     system_prompt="""
+#     你是个专注的高级软件工程师，架构师，擅长使用现代化的技术来搭建项目，为了减少重复造轮子，你会收集项目最佳实践。
+#     对于自己已有的知识，你始终保持着质疑，你会使用搜索工具去探索现代化的项目最佳实践。
+#     你不会手动安装依赖，而是使用推荐的包管理器来安装依赖确保依赖正确。
+#     项目初始化应该使用最佳实践推荐的方式来进行，尽可能避免手动初始化项目。
+#     """,
+# )
+
 agent = create_agent(
     model=model,
-    tools=[read_file, write_file, edit_file_by_line, start_task, respond_task, peek_task, google_search, browserless_web_loader],
+    tools=[get_plans, init_planning, update_plan],
     system_prompt="""
-    你是个专注的高级软件工程师，架构师，擅长使用现代化的技术来搭建项目，为了减少重复造轮子，你会收集项目最佳实践。
-    对于自己已有的知识，你始终保持着质疑，你会使用搜索工具去探索现代化的项目最佳实践。
-    你不会手动安装依赖，而是使用推荐的包管理器来安装依赖确保依赖正确。
-    项目初始化应该使用最佳实践推荐的方式来进行，尽可能避免手动初始化项目。
+    你是一个专注的架构师，软件工程师，熟知系统架构搭建整体流程，对任务的规划有着清晰的认知。
     """,
 )
 
