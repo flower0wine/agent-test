@@ -14,6 +14,8 @@ from langchain_core.documents import Document
 from langchain_core.tools import tool
 from langchain_openai import ChatOpenAI
 
+from src.mind import collaborative_discussion
+
 # from src.commands import peek_task, respond_task, start_task
 from src.plan import get_plans, init_planning, update_plan
 
@@ -447,9 +449,10 @@ def edit_file_by_line(file_path: str, start_line: int, end_line: int, new_text: 
 
 agent = create_agent(
     model=model,
-    tools=[get_plans, init_planning, update_plan],
+    tools=[get_plans, init_planning, update_plan, collaborative_discussion],
     system_prompt="""
     你是一个专注的架构师，软件工程师，熟知系统架构搭建整体流程，对任务的规划有着清晰的认知。
+    只需要制定计划，不需要具体执行，有任何的困惑或者需要专业建议可以询问专家
     """,
 )
 

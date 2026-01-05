@@ -1,3 +1,5 @@
+import re
+
 from langchain_core.tools import tool
 from pydantic import BaseModel, Field
 
@@ -10,7 +12,20 @@ class PlanItem(BaseModel):
     task: str = Field(description="具体的任务描述内容")
     status: str = Field(description="任务状态，可选值: 'todo', 'in_progress', 'completed', 'failed'")
     
-@tool
+def extract_index(plan_id: str) -> int:
+    """辅助函数：从 plan_step_N 格式中提取数字索引"""
+    match = re.search(r'plan_step_(\d+)', plan_id)
+    
+    if match:
+        return int(match.group(1))
+    else:
+        raise ValueError(f"任务 ID 错误: {plan_id}")
+    
+
+with open("src/todowrite.txt") as f:
+    DESCRIPTION_WRITE = f.read()
+    
+@tool(description=DESCRIPTION_WRITE)
 def init_planning(tasks: list[str]) -> str:
     """
     【规划创建工具】用于创建详细的任务执行步骤和规划。
@@ -99,14 +114,13 @@ def update_plan(
     if plan_id not in plan_storage:
         return f"错误：任务 {plan_id} 不存在。请使用 get_plans 查看整体 plan 确认"
 
-    pids = sorted(plan_storage.keys(), key=int)
-    current_idx = pids.index(plan_id)
-
-    # 顺序检查：检查当前 ID 之前的所有任务是否已完成
+    sorted_keys = sorted(plan_storage.keys(), key=extract_index)
+    current_idx = sorted_keys.index(plan_id)
+    
     for i in range(current_idx):
-        prev_id = pids[i]
+        prev_id = sorted_keys[i]
         if plan_storage[prev_id]["status"] != "completed":
-            return f"拦截执行！前置任务 {prev_id} 尚未完成。Agent 必须保持专注，严禁跨任务操作。请使用 get_plans 查看整体 plan 确认"
+            return f"更新拒绝！前置步骤 {prev_id} 尚未完成。请保持专注，按顺序逐一执行任务。"
 
     # 更新状态
     plan_storage[plan_id]["status"] = status

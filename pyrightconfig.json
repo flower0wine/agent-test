@@ -23,6 +23,9 @@
 
   "extraPaths": ["."],
 
+  "venv": "",
+  "venvPath": ".venv",
+
   "executionEnvironments": [
     {
       "root": "src",
