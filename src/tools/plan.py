@@ -22,7 +22,7 @@ def extract_index(plan_id: str) -> int:
         raise ValueError(f"任务 ID 错误: {plan_id}")
     
 
-with open("src/todowrite.txt") as f:
+with open("src/tools/todowrite.txt") as f:
     DESCRIPTION_WRITE = f.read()
     
 @tool(description=DESCRIPTION_WRITE)
