@@ -1,13 +1,12 @@
 import operator
 import os
-from typing import Annotated, Any, Literal
+from typing import Annotated, Any
 
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain.messages import AnyMessage, ToolMessage
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from langchain_openai import ChatOpenAI
-from langgraph.graph import END
 from typing_extensions import TypedDict
 
 from src.tools.commands import peek_task, respond_task, start_task
@@ -105,23 +104,3 @@ agent = create_agent(
     """,
 )
 
-
-def should_continue(state: MessagesState) -> Literal["tool_node", END]:
-    """Decide if we should continue the loop or stop based upon whether the LLM made a tool call"""
-
-    messages = state["messages"]
-    last_message = messages[-1]
-
-    # If the LLM makes a tool call, then perform an action
-    if last_message.tool_calls:
-        return "tool_node"
-
-    # Otherwise, we stop (reply to the user)
-    return END
-
-# Run the agent
-# response = agent.invoke(
-#     {"messages": [{"role": "user", "content": "请你说明斐波那契数列第十一个数字是什么，并展示给我计算过程"}]}
-# )
-
-# print(response)
